@@ -1,12 +1,12 @@
 package com.example.springscratcherjdbc;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -18,7 +18,9 @@ public class Comment {
   private long id;
   private String name;
   private String content;
+  @CreatedDate
   private LocalDateTime createdAt;
+  @LastModifiedDate
   private LocalDateTime updatedAt;
 
   @Builder

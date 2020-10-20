@@ -2,17 +2,23 @@ package com.example.springscratcherjdbc;
 
 import java.time.LocalDateTime;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table
+@Table @ToString @Getter
 public class Author {
   @Id
   private long id;
   private String name;
   private AuthorRank authorRank;
+  @CreatedDate
   private LocalDateTime createdAt;
+  @LastModifiedDate
   private LocalDateTime updatedAt;
 
   @Builder
@@ -28,5 +34,9 @@ public class Author {
   public Author(String name){
     this.name = name;
     this.authorRank = AuthorRank.NORMAL;
+  }
+
+  public void changeAuthorRank(AuthorRank authorRank){
+    this.authorRank = authorRank;
   }
 }
