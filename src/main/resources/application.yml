@@ -3,16 +3,8 @@ spring:
     url: jdbc:mysql://localhost/test?verifyServerCertificate=false&useSSL=false&requireSSL=false&useUnicode=true&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: cecil1018
-    password: ***REMOVED***
+    password:
 
-
-
-#logging:
-#  level:
-#    org:
-#      srpingframework:
-#        web: DEBUG
-#      hibernate: DEBUG
 logging:
   level:
     org:

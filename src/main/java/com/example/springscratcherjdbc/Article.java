@@ -3,40 +3,38 @@ package com.example.springscratcherjdbc;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.MappedCollection;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Table
-@Getter
+@Getter @ToString
 public class Article {
   @Id
   private long id;
+  @MappedCollection(idColumn = "article_id", keyColumn = "author_id")
+  private AuthorRef author;
   private String title;
   private String content;
-  @MappedCollection(idColumn = "article_id")
-  private Set<Comment> comments;
+  @MappedCollection(idColumn = "article_id", keyColumn = "article_key")
+  private List<Comment> comments;
+  @CreatedDate
   private LocalDateTime createdAt;
+  @LastModifiedDate
   private LocalDateTime updatedAt;
 
   @Builder
   @PersistenceConstructor
-  public Article( String title, String content, Set<Comment> comments, LocalDateTime createdAt,
+  public Article(AuthorRef author, String title, String content, List<Comment> comments, LocalDateTime createdAt,
       LocalDateTime updatedAt) {
+    this.author = author;
     this.title = title;
     this.content = content;
     this.comments = comments;
@@ -44,29 +42,34 @@ public class Article {
     this.updatedAt = LocalDateTime.now();
   }
 
-  public Article(String title, String content){
+  public Article(Author author, String title, String content){
+    this.author = createAuthorRef(author);
     this.title = title;
     this.content = content;
   }
 
-  public Set<Comment> addComment(Comment... comment){
+  public List<Comment> addComment(Comment... comment){
     if(this.comments == null){
-      comments = new HashSet<>();
+      comments = new ArrayList();
     }
-    comments.addAll(new ArrayList(Arrays.asList(comment))); // perhaps cause cannot remove problem below
+    comments.addAll(new ArrayList(Arrays.asList(comment)));
     return comments;
   }
-  public Set<Comment> removeComment(Comment comment){
+  public List<Comment> removeComment(Comment comment){
     if(this.comments == null){
       return null;
     }
-    long commentId = comment.getId();
-//    boolean f = comments.removeIf(c->c.getId() == commentId);
-//      comments.remove(comment); // is Set Immutable?
-
-    ArrayList<Comment> list = new ArrayList<>(comments);
-    list.removeIf(c->c.getId()==commentId);
-    comments = list.stream().collect(Collectors.toSet());
+    comments.remove(comment);
     return comments;
+  }
+
+  public void setAuthor(Author author){
+    this.author = createAuthorRef(author);
+  }
+
+  private AuthorRef createAuthorRef(Author author){
+    AuthorRef authorRef = new AuthorRef();
+    authorRef.setAuthorId(author.getId());
+    return authorRef;
   }
 }
